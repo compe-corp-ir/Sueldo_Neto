@@ -212,7 +212,7 @@ const InputsCard: React.FC<InputsCardProps> = ({
                 <SelectValue placeholder="Seleccionar régimen" />
               </SelectTrigger>
               <SelectContent className="text-sm tv:text-[15px]">
-                <SelectItem value="NORMAL">Regular</SelectItem>
+                <SelectItem value="NORMAL">Regularrrr</SelectItem>
                 <SelectItem value="RIA">RIA</SelectItem>
               </SelectContent>
             </Select>
