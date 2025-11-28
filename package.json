@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://NilsonCueva.github.io/Sueldo_Neto",
+  "homepage": "https://compe-corp-ir.github.io/Sueldo_Neto",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
