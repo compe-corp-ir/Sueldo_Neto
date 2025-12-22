@@ -1,56 +1,81 @@
-// src/pages/SalaryCalculator.tsx
 import React, { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
+
 import InputsCard from '@/components/salary/InputsCard';
 import KPICards from '@/components/salary/KPICards';
 import AnnualMetrics from '@/components/salary/AnnualMetrics';
 import ChartsPanel from '@/components/salary/ChartsPanel';
 import BreakdownAccordion from '@/components/salary/BreakdownAccordion';
 import BonusMetrics from '@/components/salary/BonusMetrics';
+
 import {
   calculateSalary,
   computeBonusGross,
   computeBonusNetFifthOnlyFromResults,
 } from '@/utils/salaryCalculator';
+
+import { calculateSalaryECU } from '@/utils/salaryCalculatorECU';
+
 import type { SalaryInputs, SalaryResults } from '@/utils/salaryCalculator';
+
 import logo from '/Intercorp_Retail.svg';
+
+/* ===================== Tipos ===================== */
+type Country = 'PE' | 'EC';
+
+/* ===================== Component ===================== */
 
 const SalaryCalculator: React.FC = () => {
   const [results, setResults] = useState<SalaryResults | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Perú
   const [lastInputs, setLastInputs] = useState<SalaryInputs | null>(null);
   const [bonusMultiples, setBonusMultiples] = useState<number>(0);
 
-  // ================================
-  // CALCULAR SUELDO PRINCIPAL
-  // ================================
-  const handleCalculate = useCallback(async (inputs: SalaryInputs) => {
-    setResults(null); // limpia resultados anteriores
-    setLoading(true);
-    try {
-      await new Promise((r) => setTimeout(r, 500)); // simulación de retardo
-      setLastInputs(inputs);
-      const calculatedResults = calculateSalary(inputs);
-      setResults(calculatedResults);
-    } catch (error) {
-      console.error('Error calculating salary:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // País
+  const [selectedCountry, setSelectedCountry] = useState<Country>('PE');
 
-  // ================================
-  // LIMPIAR
-  // ================================
+  /* ================= CALCULAR ================= */
+  const handleCalculate = useCallback(
+    async (inputs: any) => {
+      setResults(null);
+      setLoading(true);
+
+      try {
+        await new Promise((r) => setTimeout(r, 500));
+
+        let calculatedResults: SalaryResults;
+
+        if (selectedCountry === 'EC') {
+          calculatedResults = calculateSalaryECU({
+            basicSalary: inputs.grossMonthly ?? inputs.basicSalary,
+            year: inputs.year,
+          });
+        } else {
+          const peInputs = inputs as SalaryInputs;
+          setLastInputs(peInputs);
+          calculatedResults = calculateSalary(peInputs);
+        }
+
+        setResults(calculatedResults);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [selectedCountry]
+  );
+
+  /* ================= LIMPIAR ================= */
   const handleClear = useCallback(() => {
     setResults(null);
     setLastInputs(null);
     setBonusMultiples(0);
   }, []);
 
-  // ================================
-  // DATOS DERIVADOS PARA LA UI
-  // ================================
+  /* ================= DERIVADOS ================= */
   const regime = results?.regime ?? 'NORMAL';
   const healthScheme = results?.healthScheme ?? 'ESSALUD';
   const healthRateLabel = healthScheme === 'EPS' ? '6.75%' : '9%';
@@ -58,166 +83,178 @@ const SalaryCalculator: React.FC = () => {
 
   const loadingUI = loading;
 
-  // ================================
-  // BONOS
-  // ================================
+  /* ================= BONOS PERÚ ================= */
   const bonusGross = useMemo(() => {
-    if (!results) return 0;
+    if (!results || selectedCountry !== 'PE') return 0;
     return computeBonusGross(
       results.basicSalary,
       results.foodAllowance,
-      Number.isFinite(bonusMultiples) ? bonusMultiples : 0
+      bonusMultiples
     );
-  }, [results, bonusMultiples]);
+  }, [results, bonusMultiples, selectedCountry]);
 
   const bonusNet = useMemo(() => {
-    if (!results || !lastInputs || bonusGross <= 0) return 0;
+    if (!results || !lastInputs || selectedCountry !== 'PE') return 0;
     return computeBonusNetFifthOnlyFromResults(
       lastInputs,
       results,
       bonusGross
     ).bonusNet;
-  }, [results, lastInputs, bonusGross]);
+  }, [results, lastInputs, bonusGross, selectedCountry]);
 
-  // ================================
-  // RENDER
-  // ================================
+  /* ================= RENDER ================= */
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b-4 border-blue-600">
-        <div
-          className="
-            container mx-auto
-            px-3 sm:px-4 lg:px-6 2xl:px-8
-            py-3 sm:py-4
-            grid grid-cols-[1fr_auto] items-start gap-2
-            sm:flex sm:items-center sm:justify-between
-          "
-        >
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex-1"
-          >
-            <h1 className="text-2xl sm:text-3xl tv:text-[2.25rem] font-bold text-blue-700 text-left">
-              💰 Sueldo Neto Perú
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-blue-700">
+              💰 Sueldo Neto {selectedCountry === 'EC' ? 'Ecuador' : 'Perú'}
             </h1>
-            <p className="hidden sm:block text-blue-700/90 text-left mt-2 text-sm sm:text-base tv:text-xl">
-              Calculadora completa con AFP, 5ta categoría, gratificaciones y bonos
+            <p className="text-blue-700/80">
+              Calculadora salarial completa y comparable
             </p>
-          </motion.div>
-
-          <img
-            src={logo}
-            alt="Intercorp Retail Logo"
-            className="
-              h-8 w-auto max-w-[120px] object-contain
-              sm:h-10 sm:max-w-[250px] sm:ml-4
-              tv:h-12
-            "
-            style={{ maxHeight: '48px' }}
-          />
+          </div>
+          <img src={logo} className="h-10" />
         </div>
       </header>
 
-      {/* Main Content */}
-      <main
-        className="
-          container mx-auto
-          max-w-screen-4xl tv:max-w-[2560px]
-          px-3 sm:px-4 lg:px-6 2xl:px-8
-          py-6 sm:py-8
-        "
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-7">
-          {/* Left Column - Inputs */}
-          <motion.div
-            className="lg:col-span-4 space-y-6"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <InputsCard
-              onCalculate={handleCalculate}
-              onClear={handleClear}
-              loading={loadingUI}
-              onBonusMultiplesChange={setBonusMultiples}
-            />
-          </motion.div>
+      <main className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Inputs */}
+        <div className="lg:col-span-4">
+          <InputsCard
+            onCalculate={handleCalculate}
+            onClear={handleClear}
+            loading={loadingUI}
+            onBonusMultiplesChange={setBonusMultiples}
+            onCountryChange={setSelectedCountry}
+          />
+        </div>
 
-          {/* Right Column - Results */}
-          <motion.div
-            className="lg:col-span-8 space-y-6 xl:space-y-7"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            {/* Solo muestra los resultados cuando !loading y hay datos */}
-            {!loading && results && (
-              <>
-                {/* KPI Mensuales */}
-                <KPICards
-                  grossSalary={results.grossMonthlySalary}
-                  afpDeduction={results.afpDeduction}
-                  fifthCategoryTax={results.fifthCategoryTax}
-                  netSalary={results.netMonthlySalary}
-                  foodAllowance={results.foodAllowance}
-                  loading={loadingUI}
-                />
+        {/* Results */}
+        <div className="lg:col-span-8 space-y-6">
+          {!loading && results && (
+            <>
+              {/* KPIs */}
+              <KPICards
+                country={selectedCountry}
+                grossSalary={results.grossMonthlySalary}
+                netSalary={results.netMonthlySalary}
+                netSalaryYear2={
+                  selectedCountry === 'EC'
+                    ? results.netMonthlySalaryYear2
+                    : undefined
+                }
+                foodAllowance={results.foodAllowance}
+                loading={loadingUI}
+                afpDeduction={results.afpDeduction}
+                fifthCategoryTax={results.fifthCategoryTax}
+                iessDeduction={
+                  selectedCountry === 'EC'
+                    ? results.afpDeduction
+                    : undefined
+                }
+                incomeTax={
+                  selectedCountry === 'EC'
+                    ? results.fifthCategoryTax
+                    : undefined
+                }
+                decimoThird={
+                  selectedCountry === 'EC'
+                    ? results.christmasBonus / 12
+                    : undefined
+                }
+                decimoFourth={
+                  selectedCountry === 'EC'
+                    ? results.julyBonus / 12
+                    : undefined
+                }
+                reserveFund={
+                  selectedCountry === 'EC'
+                    ? results.netMonthlySalaryYear2 -
+                      results.netMonthlySalary
+                    : undefined
+                }
+              />
 
-                {/* Métricas de Bonos */}
-                {((bonusGross || 0) > 0 || (bonusNet || 0) > 0) && (
+              {/* Bonos Perú */}
+              {selectedCountry === 'PE' &&
+                (bonusGross > 0 || bonusNet > 0) && (
                   <BonusMetrics
                     bonusGross={bonusGross}
                     bonusNet={bonusNet}
-                    defaultExpanded={false}
                   />
                 )}
 
-                {/* Métricas Anuales */}
-                <AnnualMetrics
-                  annualGrossIncome={results.annualGrossIncome}
-                  christmasBonus={results.christmasBonus}
-                  julyBonus={results.julyBonus}
-                  healthBonus={results.healthBonus}
-                  totalAnnualIncome={results.totalAnnualIncome}
-                  netAnnualSalary={results.netAnnualSalary}
-                  loading={loadingUI}
-                  regime={regime}
-                  healthRateLabel={healthRateLabel}
-                  riaAliquots={riaAliquots}
-                  bonusGross={bonusGross}
-                  annualFoodAllowance={results.annualFoodAllowance}
-                />
+              {/* ================= MÉTRICAS ANUALES ================= */}
+              <AnnualMetrics
+                country={selectedCountry}
 
-                {/* Gráficos */}
-                <ChartsPanel
-                  grossSalary={results.grossMonthlySalary}
-                  afpDeduction={results.afpDeduction}
-                  fifthCategoryTax={results.fifthCategoryTax}
-                  netSalary={results.netMonthlySalary}
-                />
+                /* Común */
+                annualGrossIncome={results.annualGrossIncome}
+                christmasBonus={results.christmasBonus}
+                julyBonus={results.julyBonus}
+                healthBonus={results.healthBonus}
+                totalAnnualIncome={results.totalAnnualIncome}
+                netAnnualSalary={results.netAnnualSalary}
+                loading={loadingUI}
+                regime={regime}
+                healthRateLabel={healthRateLabel}
+                riaAliquots={riaAliquots}
+                annualFoodAllowance={results.annualFoodAllowance}
 
-                {/* Desglose */}
-                <BreakdownAccordion
-                  breakdown={results.breakdown || null}
-                  loading={loadingUI}
-                />
-              </>
-            )}
-          </motion.div>
+                /* Perú */
+                bonusGross={selectedCountry === 'PE' ? bonusGross : 0}
+                bonusNet={selectedCountry === 'PE' ? bonusNet : undefined}
+
+                /* Ecuador */
+                grossAnnual13={
+                  selectedCountry === 'EC'
+                    ? results.grossMonthlySalary * 13
+                    : 0
+                }
+                decimoFourthAnnual={
+                  selectedCountry === 'EC'
+                    ? results.julyBonus
+                    : 0
+                }
+                reserveFundAnnual={
+                  selectedCountry === 'EC'
+                    ? results.netAnnualSalary -
+                      results.netMonthlySalary * 12
+                    : 0
+                }
+                totalAnnualCost={
+                  selectedCountry === 'EC'
+                    ? results.grossMonthlySalary * 13 +
+                      results.julyBonus +
+                      (results.netAnnualSalary -
+                        results.netMonthlySalary * 12)
+                    : 0
+                }
+                  grossAnnual12={
+                    selectedCountry === 'EC' ? results.grossAnnual12 : 0
+                  }
+                  iessAnnual12={
+                    selectedCountry === 'EC' ? results.iessAnnual12 : 0
+                  }
+              />
+
+              <ChartsPanel
+                grossSalary={results.grossMonthlySalary}
+                afpDeduction={results.afpDeduction}
+                fifthCategoryTax={results.fifthCategoryTax}
+                netSalary={results.netMonthlySalary}
+              />
+
+              <BreakdownAccordion
+                breakdown={results.breakdown}
+                loading={loadingUI}
+              />
+            </>
+          )}
         </div>
-
-        <motion.footer
-          className="mt-12 py-8 border-t border-muted"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-        >
-          {/* opcional */}
-        </motion.footer>
       </main>
     </div>
   );

@@ -20,13 +20,18 @@ export interface SalaryResults {
     bonoAliquot: number;
     ctsAliquot: number;
     healthRateLabel: string; // "9%" | "6.75%"
+    
   } | null;
+  grossAnnual12?: number;
+  iessAnnual12?: number;
 
   // Inputs
   basicSalary: number;
   foodAllowance: number;
   familyAllowance: number;
-
+  netMonthlySalaryYear2?: number;
+  grossAnnual13?: number;
+  totalAnnualCost?: number;
   // Mensual
   grossMonthlySalary: number; // SIN vale
   afpDeduction: number;
