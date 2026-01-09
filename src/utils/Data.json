@@ -32,7 +32,7 @@
       ],
       "DEDUCTION_UIT": 7
     },
-    "2025": {
+    "2025_V1": {
       "UIT": 5350,
       "FAMILY_ALLOWANCE": 113,
       "HEALTH_BONUS": { "ESSALUD": 0.09, "EPS": 0.0675 },
@@ -48,7 +48,7 @@
       ],
       "DEDUCTION_UIT": 7
     },
-    "2026": {
+    "2025": {
       "UIT": 5500,
       "FAMILY_ALLOWANCE": 113,
       "HEALTH_BONUS": { "ESSALUD": 0.09, "EPS": 0.0675 },
@@ -66,7 +66,7 @@
     }
   },
   "RIA": {
-    "2025": {
+    "2025_V1": {
       "UIT": 5350,
       "FAMILY_ALLOWANCE": 113,
 
@@ -91,7 +91,7 @@
 
       "HEALTH_BONUS": { "ESSALUD": 0.09, "EPS": 0.0675 }
     },
-    "2026": {
+    "2025": {
       "UIT": 5500,
       "FAMILY_ALLOWANCE": 113,
 
