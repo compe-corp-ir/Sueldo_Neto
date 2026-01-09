@@ -47,11 +47,52 @@
         { "fromUIT": 45, "toUIT": null, "rate": 0.30 }
       ],
       "DEDUCTION_UIT": 7
+    },
+    "2026": {
+      "UIT": 5500,
+      "FAMILY_ALLOWANCE": 113,
+      "HEALTH_BONUS": { "ESSALUD": 0.09, "EPS": 0.0675 },
+      "AFP_BASE_RATE": 0.1147,
+      "AFP_EXTRA_RATE": 0.0137,
+      "AFP_EXTRA_CAP": 12178.56,
+      "FIFTH_CATEGORY_BRACKETS_UIT": [
+        { "fromUIT": 0, "toUIT": 5, "rate": 0.08 },
+        { "fromUIT": 5, "toUIT": 20, "rate": 0.14 },
+        { "fromUIT": 20, "toUIT": 35, "rate": 0.17 },
+        { "fromUIT": 35, "toUIT": 45, "rate": 0.20 },
+        { "fromUIT": 45, "toUIT": null, "rate": 0.30 }
+      ],
+      "DEDUCTION_UIT": 7
     }
   },
   "RIA": {
     "2025": {
       "UIT": 5350,
+      "FAMILY_ALLOWANCE": 113,
+
+      "AFP_BASE_RATE": 0.1147,
+      "AFP_EXTRA_RATE": 0.0137,
+      "AFP_EXTRA_CAP": 12178.56,
+
+      "FIFTH_CATEGORY_BRACKETS_UIT": [
+        { "fromUIT": 0, "toUIT": 5, "rate": 0.08 },
+        { "fromUIT": 5, "toUIT": 20, "rate": 0.14 },
+        { "fromUIT": 20, "toUIT": 35, "rate": 0.17 },
+        { "fromUIT": 35, "toUIT": 45, "rate": 0.20 },
+        { "fromUIT": 45, "toUIT": null, "rate": 0.30 }
+      ],
+      "DEDUCTION_UIT": 7,
+
+      "BUILD_FROM_COMPONENTS": true,
+      "GRATI_ANNUAL_MONTHS": 2,
+      "VACATION_ANNUAL_MONTHS": 1,
+      "CTS_ANNUAL_MONTHS": 1.1666667,
+      "INCLUDE_HEALTH_BONUS_EQUIV": true,
+
+      "HEALTH_BONUS": { "ESSALUD": 0.09, "EPS": 0.0675 }
+    },
+    "2026": {
+      "UIT": 5500,
       "FAMILY_ALLOWANCE": 113,
 
       "AFP_BASE_RATE": 0.1147,
