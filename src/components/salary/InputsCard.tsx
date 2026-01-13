@@ -66,7 +66,7 @@ const InputsCard: React.FC<InputsCardProps> = ({
   /* ---------- Comunes ---------- */
   const [basicSalary, setBasicSalary] = useState('');
   const [foodAllowance, setFoodAllowance] = useState('');
-  const [year, setYear] = useState('2026');
+  const [year, setYear] = useState('2025');
 
   /* ---------- Perú ---------- */
   const [regime, setRegime] = useState<Regime>('NORMAL');
@@ -118,7 +118,7 @@ const InputsCard: React.FC<InputsCardProps> = ({
     setCountry('PE');
     setBasicSalary('');
     setFoodAllowance('');
-    setYear('2026');
+    setYear('2025');
     setRegime('NORMAL');
     setHealthScheme('ESSALUD');
     setHasFamilyAllowance(false);
@@ -160,7 +160,7 @@ const InputsCard: React.FC<InputsCardProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2026">2026</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
               </SelectContent>
             </Select>
           </div>
