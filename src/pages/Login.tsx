@@ -27,7 +27,7 @@ const Login = () => {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-xl shadow w-80 space-y-4"
       >
-        <h2 className="text-xl font-bold text-center">Login :D</h2>
+        <h2 className="text-xl font-bold text-center">Login 🔒</h2>
 
         <input
           className="w-full border p-2 rounded"
