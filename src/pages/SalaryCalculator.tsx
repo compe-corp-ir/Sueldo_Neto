@@ -116,7 +116,6 @@ const SalaryCalculator: React.FC = () => {
               Calculadora salarial completa y comparable
             </p>
           </div>
-          <img src={logo} className="h-10" />
         </div>
       </header>
 
@@ -138,6 +137,9 @@ const SalaryCalculator: React.FC = () => {
             <>
               {/* KPIs */}
               <KPICards
+                regime={regime}
+
+                riaAliquots={riaAliquots}
                 country={selectedCountry}
                 grossSalary={results.grossMonthlySalary}
                 netSalary={results.netMonthlySalary}

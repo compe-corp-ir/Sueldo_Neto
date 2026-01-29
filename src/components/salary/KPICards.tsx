@@ -8,9 +8,20 @@ import {
   CheckCircle2,
   Utensils,
   Gift,
+  Percent,
+  TwitterIcon
 } from 'lucide-react';
+import type { Regime } from '@/utils/salaryCalculator';
 
 /* ===================== Tipos ===================== */
+
+interface RiaAliquots {
+  baseSF: number;
+  gratiAliquot: number;
+  bonoAliquot: number;
+  ctsAliquot: number;
+  healthRateLabel?: string;
+}
 
 interface KPICardsProps {
   country?: 'PE' | 'EC';
@@ -20,7 +31,7 @@ interface KPICardsProps {
   // Netos
   netSalary: number;           // Año 1
   netSalaryYear2?: number;     // Año 2 (EC)
-
+  regime?: Regime,
   // 🇵🇪 Perú
   afpDeduction?: number;
   fifthCategoryTax?: number;
@@ -32,6 +43,7 @@ interface KPICardsProps {
   decimoThird?: number;
   decimoFourth?: number;
   reserveFund?: number;
+  riaAliquots?: RiaAliquots | null;
 
   loading?: boolean;
 }
@@ -44,10 +56,11 @@ const KPICards: React.FC<KPICardsProps> = ({
 
   netSalary,
   netSalaryYear2,
-
+  regime,
   afpDeduction = 0,
   fifthCategoryTax = 0,
   foodAllowance = 0,
+  riaAliquots = null,
 
   iessDeduction = 0,
   incomeTax = 0,
@@ -57,6 +70,10 @@ const KPICards: React.FC<KPICardsProps> = ({
 
   loading = false,
 }) => {
+  const isRIA = regime === 'RIA';
+  console.log(regime)
+  console.log(isRIA)
+
   const formatCurrency = (value: number): string =>
     new Intl.NumberFormat(country === 'EC' ? 'es-EC' : 'es-PE', {
       style: 'currency',
@@ -65,6 +82,7 @@ const KPICards: React.FC<KPICardsProps> = ({
     }).format(value);
 
   return (
+    
     <div className="space-y-4 animate-fade-in">
 
       {/* ================= ECUADOR ================= */}
@@ -89,8 +107,11 @@ const KPICards: React.FC<KPICardsProps> = ({
       )}
 
       {/* ================= PERÚ ================= */}
-      {country === 'PE' && (
+      {country === 'PE' &&  (
+        
         <div className="grid grid-cols-5 gap-3">
+
+        {/* KPIS */}
           <KPICard title="Bruto Mensual" value={grossSalary} icon={TrendingUp} variant="gross" loading={loading} format={formatCurrency} />
           <KPICard title="AFP (Jubilación)" value={afpDeduction} icon={CreditCard} variant="deduction" loading={loading} format={formatCurrency} />
           <KPICard title="5ta Categoría" value={fifthCategoryTax} icon={FileText} variant="tax" loading={loading} format={formatCurrency} />
@@ -98,12 +119,25 @@ const KPICards: React.FC<KPICardsProps> = ({
             <KPICard title="Bono de Alimentos" value={foodAllowance} icon={Utensils} variant="food" loading={loading} format={formatCurrency} />
           )}
           <KPICard title="Neto Mensual" value={netSalary} icon={CheckCircle2} variant="net" loading={loading} format={formatCurrency} />
+          
         </div>
       )}
-    </div>
-  );
-};
+        {/* RIA */}
+      {regime === 'RIA' && (
 
+        <div className="grid grid-cols-5 gap-3">
+          <div>
+            <br />
+          Alícuotas RIA (mensualizadas)
+          </div>
+          <KPICard title="Alícuota Gratificación" value={riaAliquots.gratiAliquot} icon={TrendingUp} variant="gross" loading={loading} format={formatCurrency} />
+          <KPICard title="Alícuota Bono Extraord." value={riaAliquots.bonoAliquot} icon={CreditCard} variant="deduction" loading={loading} format={formatCurrency} />
+          <KPICard title="Alícuota CTS mensual" value={riaAliquots.ctsAliquot} icon={FileText} variant="tax" loading={loading} format={formatCurrency} />
+          </div>
+      )}
+    </div>
+    )}
+    
 /* ===================== KPI Card ===================== */
 
 interface KPICardProps {

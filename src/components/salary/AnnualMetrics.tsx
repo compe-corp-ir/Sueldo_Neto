@@ -276,6 +276,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
 
         {/* ================= RIA (INTACTO) ================= */}
         {isRIA && riaAliquots && (
+          /*
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -317,6 +318,20 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
               </div>
             </div>
           </motion.div>
+          */
+         <div
+            className={`grid gap-4 ${
+              isEC
+                ? 'grid-cols-1 sm:grid-cols-3'
+                : hasVales
+                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+                : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2'
+            }`}
+          >
+            {metrics.map((m: any) => (
+              <MetricCard key={m.key} {...m} />
+            ))}
+          </div>
         )}
 
         {/* Neto anual (ambos países) */}
