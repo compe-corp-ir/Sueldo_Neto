@@ -192,7 +192,6 @@ const SalaryCalculator: React.FC = () => {
               {/* ================= MÉTRICAS ANUALES ================= */}
               <AnnualMetrics
                 country={selectedCountry}
-
                 /* Común */
                 annualGrossIncome={results.annualGrossIncome}
                 christmasBonus={results.christmasBonus}
@@ -205,7 +204,7 @@ const SalaryCalculator: React.FC = () => {
                 healthRateLabel={healthRateLabel}
                 riaAliquots={riaAliquots}
                 annualFoodAllowance={results.annualFoodAllowance}
-
+                basic = {lastInputs.basicSalary}
                 /* Perú */
                 bonusGross={selectedCountry === 'PE' ? bonusGross : 0}
                 bonusNet={selectedCountry === 'PE' ? bonusNet : undefined}

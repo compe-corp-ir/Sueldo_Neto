@@ -25,7 +25,7 @@ interface AnnualMetricsProps {
   loading?: boolean;
   grossAnnual12?: number;
   iessAnnual12?: number;
-
+  basic : number,
   regime?: Regime;
   healthRateLabel?: string;
   riaAliquots?: RiaAliquots | null;
@@ -55,7 +55,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
   totalAnnualIncome,
   netAnnualSalary,
   loading = false,
-
+  basic,
   regime = 'NORMAL',
   healthRateLabel = '9%',
   riaAliquots = null,
@@ -74,7 +74,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
 }) => {
   const isRIA = regime === 'RIA';
   const isEC = country === 'EC';
-
+  const cts = 0;
   const hasVales = annualFoodAllowance > 0;
   const hasBonusGross = bonusGross > 0;
   const hasBonusNet = typeof bonusNet === 'number' && bonusNet > 0;
@@ -106,7 +106,9 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
     {
       key: 'gross12',
       label: 'Ingresos Anuales (12 sueldos)',
-      value: annualGrossIncome,
+      value: isRIA
+      ? basic*12
+      : annualGrossIncome,
       icon: Calendar,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50 dark:bg-blue-900/20',
@@ -123,30 +125,52 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
           },
         ]
       : []),
-    {
-      key: 'grati',
-      label: 'Gratificación Julio-Diciembre',
-      value: christmasBonus + julyBonus,
-      icon: Percent,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
-    },
+     {
+    key: 'grati',
+    label: isRIA
+      ? 'Gratificación'
+      : 'Gratificación Julio-Diciembre',
+    value: isRIA
+      ? (riaAliquots.gratiAliquot) * 12
+      : christmasBonus + julyBonus,
+    icon: Percent,
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
+  },
     {
       key: 'essalud',
-      label: `Bono Essalud (${healthRateLabel})`,
-      value: healthBonus,
+      label: `Bono Essalud`,
+      value: isRIA
+      ? (riaAliquots.bonoAliquot) * 12
+      : healthBonus,
       icon: Percent,
       color: 'text-pink-600',
       bgColor: 'bg-pink-50 dark:bg-pink-900/20',
     },
+    ...(isRIA
+  ? [
+      {
+        key: 'cts',
+        label: 'CTS',
+        value: riaAliquots.ctsAliquot * 12,
+        icon: Percent,
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50 dark:bg-orange-900/20',
+      },
+    ]
+  : []),
     {
       key: 'total',
-      labelNode: totalLabelNode,
-      value: totalWithBonus,
+      labelNode: 'Total Ingresos Brutos Anuales',
+       value: isRIA
+      ? basic*12 + annualFoodAllowance +(riaAliquots.gratiAliquot) * 12
+      + (riaAliquots.bonoAliquot) * 12 + (riaAliquots.ctsAliquot)*12 + bonusGross
+      : totalWithBonus + annualFoodAllowance,
       icon: TrendingUp,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 dark:bg-purple-900/20',
     },
+    
     ...(hasBonusNet
       ? [
           {
@@ -160,6 +184,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
         ]
       : []),
   ];
+
 
   /* ===================== MÉTRICAS ECUADOR ===================== */
   const ecuadorMetrics = [
@@ -276,49 +301,6 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
 
         {/* ================= RIA (INTACTO) ================= */}
         {isRIA && riaAliquots && (
-          /*
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-2 p-4 rounded-lg border bg-muted/20"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Percent className="w-4 h-4 text-primary" />
-              <p className="text-sm font-semibold">
-                Alícuotas RIA (mensualizadas)
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <div className="p-3 rounded bg-white/60 border">
-                <p className="text-xs text-muted-foreground">
-                  Alícuota Gratificación
-                </p>
-                <p className="font-bold">
-                  {formatCurrency(riaAliquots.gratiAliquot)}
-                </p>
-              </div>
-
-              <div className="p-3 rounded bg-white/60 border">
-                <p className="text-xs text-muted-foreground">
-                  Alícuota Bono Extraord.
-                </p>
-                <p className="font-bold">
-                  {formatCurrency(riaAliquots.bonoAliquot)}
-                </p>
-              </div>
-
-              <div className="p-3 rounded bg-white/60 border">
-                <p className="text-xs text-muted-foreground">
-                  Alícuota CTS mensual
-                </p>
-                <p className="font-bold">
-                  {formatCurrency(riaAliquots.ctsAliquot)}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-          */
          <div
             className={`grid gap-4 ${
               isEC

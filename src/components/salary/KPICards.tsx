@@ -89,15 +89,27 @@ const KPICards: React.FC<KPICardsProps> = ({
       {country === 'EC' && (
         <>
           {/* ===== Fila 1 ===== */}
-          <div className="grid grid-cols-4 gap-3">
-            <KPICard title="Salario Base" value={grossSalary} icon={TrendingUp} variant="gross" loading={loading} format={formatCurrency} />
+        <div className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-4
+          gap-3
+        ">            
+        <KPICard title="Salario Base" value={grossSalary} icon={TrendingUp} variant="gross" loading={loading} format={formatCurrency} />
             <KPICard title="Décimo Tercero" value={decimoThird} icon={Gift} variant="food" loading={loading} format={formatCurrency} />
             <KPICard title="Décimo Cuarto" value={decimoFourth} icon={Gift} variant="food" loading={loading} format={formatCurrency} />
             <KPICard title="Fondo de Reserva" value={reserveFund} icon={Gift} variant="food" loading={loading} format={formatCurrency} />
           </div>
 
           {/* ===== Fila 2 ===== */}
-          <div className="grid grid-cols-4 gap-3">
+        <div className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-4
+          gap-3
+        "> 
             <KPICard title="IESS Personal (9.45%)" value={iessDeduction} icon={CreditCard} variant="deduction" loading={loading} format={formatCurrency} />
             <KPICard title="Impuesto a la Renta" value={incomeTax} icon={FileText} variant="tax" loading={loading} format={formatCurrency} />
             <KPICard title="Neto Mensual (Año 1)" value={netSalary} icon={CheckCircle2} variant="net" loading={loading} format={formatCurrency} />
@@ -109,8 +121,14 @@ const KPICards: React.FC<KPICardsProps> = ({
       {/* ================= PERÚ ================= */}
       {country === 'PE' &&  (
         
-        <div className="grid grid-cols-5 gap-3">
-
+      <div className="
+        grid
+        grid-cols-1
+        sm:grid-cols-2
+        md:grid-cols-3
+        lg:grid-cols-5
+        gap-3
+      ">
         {/* KPIS */}
           <KPICard title="Bruto Mensual" value={grossSalary} icon={TrendingUp} variant="gross" loading={loading} format={formatCurrency} />
           <KPICard title="AFP (Jubilación)" value={afpDeduction} icon={CreditCard} variant="deduction" loading={loading} format={formatCurrency} />
@@ -125,10 +143,21 @@ const KPICards: React.FC<KPICardsProps> = ({
         {/* RIA */}
       {regime === 'RIA' && (
 
-        <div className="grid grid-cols-5 gap-3">
-          <div>
+        <div className="
+  grid
+  grid-cols-1
+  sm:grid-cols-2
+  md:grid-cols-4
+  lg:grid-cols-5
+  gap-3
+        ">
+        <div>
             <br />
-          Alícuotas RIA (mensualizadas)
+          <div className="col-span-1 sm:col-span-2 md:col-span-4 lg:col-span-5">
+  <p className="text-sm font-medium text-muted-foreground">
+    Alícuotas RIA (mensualizadas)
+  </p>
+</div>
           </div>
           <KPICard title="Alícuota Gratificación" value={riaAliquots.gratiAliquot} icon={TrendingUp} variant="gross" loading={loading} format={formatCurrency} />
           <KPICard title="Alícuota Bono Extraord." value={riaAliquots.bonoAliquot} icon={CreditCard} variant="deduction" loading={loading} format={formatCurrency} />
