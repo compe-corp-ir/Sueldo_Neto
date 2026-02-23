@@ -323,7 +323,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
               💰 Sueldo Neto Anual Total
             </p>
             <p className="text-3xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-              {formatCurrency(netAnnualSalary)}
+              {formatCurrency(netAnnualSalary + bonusNet + annualFoodAllowance)}
             </p>
           </div>
         </div>

@@ -147,6 +147,7 @@ function getHealthRate(p: TaxParams, scheme: 'ESSALUD' | 'EPS'): number {
   );
 }
 
+let porcen = 0;
 function calcFifthCategory(
   taxableAfter7UIT: number,
   bracketsUIT: BracketUIT[],
@@ -154,6 +155,8 @@ function calcFifthCategory(
 ) {
   let annualTax = 0;
   let rem = taxableAfter7UIT;
+  let lastRate = 0; // 
+
   const details: SalaryBreakdown['fifthCategoryDetails'] = [];
 
   const brackets = bracketsUIT.map((b) => ({
@@ -169,16 +172,19 @@ function calcFifthCategory(
     const taxHere = width * br.rate;
     annualTax += taxHere;
     rem -= width;
+    porcen = br.rate;     // lo de siempre
+    lastRate = br.rate;   // guardamos el ultimo tramo
 
     details.push({
       step: `Tramo ${Math.round(br.rate * 100)}%`,
       description: `S/ ${formatNumber(br.from)} - S/ ${br.to === Infinity ? '∞' : formatNumber(br.to)}`,
       amount: round2AwayFromZero(taxHere),
       rate: `${Math.round(br.rate * 100)}%`,
+      
     });
   }
 
-  return { annualTax, details };
+  return { annualTax, details, lastRate  };
 }
 
 // ================= Lectura de parámetros por RÉGIMEN + AÑO =================
@@ -368,7 +374,14 @@ export function calculateSalary(inputs: SalaryInputs): SalaryResults {
   const annualGrossIncome  = grossMonthlySalary * 12;
   const annualAfpDeduction = afpDeduction * 12;
   const totalAnnualIncome  = annualGrossIncome + totalBonuses + healthBonus;
+  console.log("annualGrossIncome: ", annualGrossIncome)
+  console.log("totalBonuses: ", totalBonuses)
+  console.log("healthBonus: ", healthBonus)
+  console.log("annualAfpDeduction: ", annualAfpDeduction)
+  console.log("annualFifthCategoryTax: ", annualFifthCategoryTax)
+
   const netAnnualSalary    = round2AwayFromZero(totalAnnualIncome - annualAfpDeduction - annualFifthCategoryTax);
+  console.log("netAnnualSalary: ", netAnnualSalary)
 
   const basePct  = (p.AFP_BASE_RATE * 100).toFixed(2);
   const extraPct = (p.AFP_EXTRA_RATE * 100).toFixed(2);
@@ -483,20 +496,36 @@ export function computeBonusNetFifthOnlyFromResults(
 
   // 2) Nueva base con bono agregado
   const baseWithBonus = (Number(baseAnnualFor5thWithoutBonus) || 0) + (Number(bonusGross) || 0);
+  const baseWithBonus2 = (Number(baseAnnualFor5thWithoutBonus) || 0);
+
 
   // 3) 7 UIT y cálculo de 5ta ANUAL con bono
   const deductionAmount = p.DEDUCTION_UIT * p.UIT;
   const taxableWithBonus = Math.max(0, baseWithBonus - deductionAmount);
 
-  const { annualTax: annualTaxWithBonus } = calcFifthCategory(
+  const taxableWithBonus2 = Math.max(0, baseWithBonus2 - deductionAmount);
+
+  const { annualTax: annualTaxWithBonus, lastRate: lastRate1  } = calcFifthCategory(
     taxableWithBonus,
     p.FIFTH_CATEGORY_BRACKETS_UIT,
     p.UIT
   );
 
+  const { annualTax: annualTaxWithBonus2, lastRate: lastRate2 } = calcFifthCategory(
+  taxableWithBonus2,
+  p.FIFTH_CATEGORY_BRACKETS_UIT,
+  p.UIT
+  );
+
+
   // 4) Prorrateo mensual y Bono Neto (solo 5ta, sin AFP)
   const monthlyTaxWithBonus = round2AwayFromZero(annualTaxWithBonus / 12);
-  const bonusNet = round2AwayFromZero(Math.max(0, (Number(bonusGross) || 0) - monthlyTaxWithBonus));
 
+  const bonusNet = round2AwayFromZero(
+  Math.max(0, (Number(bonusGross) || 0) - (baseWithBonus*lastRate1 - baseWithBonus2*lastRate2))
+  );
+
+
+  
   return { bonusNet, monthlyTaxWithBonus, annualTaxWithBonus };
 }
