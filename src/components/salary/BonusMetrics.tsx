@@ -4,6 +4,11 @@ import { motion } from 'framer-motion';
 import { Coins, CheckCircle2, ChevronDown } from 'lucide-react';
 import { formatCurrency } from '@/utils/salaryCalculator';
 
+
+function currencySafe(v: number): number {
+  return Number(v.toFixed(0));
+}
+
 interface BonusMetricsProps {
   bonusGross?: number;
   bonusNet?: number;
@@ -30,7 +35,7 @@ const BonusMetrics: React.FC<BonusMetricsProps> = ({
     },
     {
       label: 'Bono Neto',
-      value: bonusNet,
+      value: currencySafe(bonusNet),
       icon: CheckCircle2,
       color: 'text-green-700',
       bgColor: 'bg-green-50 dark:bg-green-900/20',

@@ -7,6 +7,11 @@ import type { Regime } from '@/utils/salaryCalculator';
 
 /* ===================== Tipos ===================== */
 
+function currencySafe(v: number): number {
+  return Number(v.toFixed(0));
+}
+
+
 interface RiaAliquots {
   baseSF: number;
   gratiAliquot: number;
@@ -131,8 +136,8 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
       ? 'Gratificación'
       : 'Gratificación Julio-Diciembre',
     value: isRIA
-      ? (riaAliquots.gratiAliquot) * 12
-      : christmasBonus + julyBonus,
+      ? currencySafe((riaAliquots.gratiAliquot) * 12)
+      : currencySafe(christmasBonus + julyBonus),
     icon: Percent,
     color: 'text-emerald-600',
     bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
@@ -141,8 +146,8 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
       key: 'essalud',
       label: `Bono Essalud`,
       value: isRIA
-      ? (riaAliquots.bonoAliquot) * 12
-      : healthBonus,
+      ? currencySafe((riaAliquots.bonoAliquot) * 12)
+      : currencySafe(healthBonus),
       icon: Percent,
       color: 'text-pink-600',
       bgColor: 'bg-pink-50 dark:bg-pink-900/20',
@@ -152,7 +157,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
       {
         key: 'cts',
         label: 'CTS',
-        value: riaAliquots.ctsAliquot * 12,
+        value: currencySafe(riaAliquots.ctsAliquot * 12),
         icon: Percent,
         color: 'text-orange-600',
         bgColor: 'bg-orange-50 dark:bg-orange-900/20',
@@ -163,9 +168,9 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
       key: 'total',
       labelNode: 'Total Ingresos Brutos Anuales',
        value: isRIA
-      ? basic*12 + annualFoodAllowance +(riaAliquots.gratiAliquot) * 12
-      + (riaAliquots.bonoAliquot) * 12 + (riaAliquots.ctsAliquot)*12 + bonusGross
-      : totalWithBonus + annualFoodAllowance,
+      ? currencySafe(basic*12 + annualFoodAllowance +(riaAliquots.gratiAliquot) * 12
+      + (riaAliquots.bonoAliquot) * 12 + (riaAliquots.ctsAliquot)*12 + bonusGross)
+      : currencySafe(totalWithBonus + annualFoodAllowance),
       icon: TrendingUp,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 dark:bg-purple-900/20',
@@ -176,7 +181,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
           {
             key: 'bonusNet',
             label: 'Bono Neto',
-            value: bonusNet as number,
+            value: currencySafe(bonusNet) as number,
             icon: Coins,
             color: 'text-green-700',
             bgColor: 'bg-green-50 dark:bg-green-900/20',
@@ -323,13 +328,15 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
               💰 Sueldo Neto Anual Total
             </p>
             <p className="text-3xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-              {formatCurrency(netAnnualSalary + bonusNet + annualFoodAllowance)}
+              {formatCurrency(currencySafe(netAnnualSalary + bonusNet + annualFoodAllowance))}
             </p>
           </div>
         </div>
       </CardContent>
     </Card>
+    
   );
+  
 };
 
 export default AnnualMetrics;
