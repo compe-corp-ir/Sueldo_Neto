@@ -174,20 +174,7 @@ const AnnualMetrics: React.FC<AnnualMetricsProps> = ({
       icon: TrendingUp,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-    },
-    
-    ...(hasBonusNet
-      ? [
-          {
-            key: 'bonusNet',
-            label: 'Bono Neto',
-            value: currencySafe(bonusNet) as number,
-            icon: Coins,
-            color: 'text-green-700',
-            bgColor: 'bg-green-50 dark:bg-green-900/20',
-          },
-        ]
-      : []),
+    }
   ];
 
 
